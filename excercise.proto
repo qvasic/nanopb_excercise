@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+message hello_message
+{
+    int32 a_number = 1;
+}

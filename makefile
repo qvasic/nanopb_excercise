@@ -7,4 +7,7 @@ client: client.c
 	gcc -o client client.c
 
 clean:
-	rm server client
+	-rm server client excercise.pb.h excercise.pb.c
+
+excercise.pb.h excercise.pb.c: excercise.proto
+	python3 nanopb/generator/nanopb_generator.py excercise.proto
