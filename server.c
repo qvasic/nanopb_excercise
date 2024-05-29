@@ -10,6 +10,11 @@
 #include "excercise.pb.h"
 #include <pb_encode.h>
 
+// TODO
+// exchange client and server who sends what
+// add interrupt handler to properly exit
+// extend message with len fields
+
 void send_data_to_client(int socket)
 {
     hello_message message = hello_message_init_zero;

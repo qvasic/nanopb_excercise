@@ -6,7 +6,24 @@
 #include <errno.h>
 #include <string.h>
 
+#include "excercise.pb.h"
+#include <pb_decode.h>
+
 #define RECV_BUFFER_SIZE 64
+
+void process_data(const char* buffer, size_t len)
+{
+    hello_message message = hello_message_init_zero;
+
+    pb_istream_t input_stream = pb_istream_from_buffer(buffer, len);
+    if (!pb_decode(&input_stream, hello_message_fields, &message))
+    {
+        printf("could not encode!\n");
+        return;
+    }
+
+    printf("server says: %d\n", (int)message.a_number);
+}
 
 int main()
 {
@@ -50,7 +67,7 @@ int main()
         return 1;
     }
 
-    printf("server says: %s\n", recv_buffer);
+    process_data(recv_buffer, recv_result);
 
     close(client_socket);
 }
