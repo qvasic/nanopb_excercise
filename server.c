@@ -7,6 +7,25 @@
 
 #include <stdio.h>
 
+#include "excercise.pb.h"
+#include <pb_encode.h>
+
+void send_data_to_client(int socket)
+{
+    hello_message message = hello_message_init_zero;
+    message.a_number = 42;
+    char buffer[64];
+
+    pb_ostream_t output_stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+    if (!pb_encode(&output_stream, hello_message_fields, &message))
+    {
+        printf("could not encode!\n");
+        return;
+    }
+
+    send(socket, buffer, output_stream.bytes_written, 0);
+}
+
 int main()
 {
     printf("hell0 server\n");
@@ -42,20 +61,23 @@ int main()
         return 1;
     }
 
-    int client_socket = accept(server_socket, NULL, NULL);
-
-    if (client_socket == -1)
+    for (;;)
     {
-        printf("cannot accept: %d %s\n", errno, strerror(errno));
-        close(server_socket);
-        return 1;
+        int client_socket = accept(server_socket, NULL, NULL);
+
+        if (client_socket == -1)
+        {
+            printf("cannot accept: %d %s\n", errno, strerror(errno));
+            close(server_socket);
+            return 1;
+        }
+
+        printf("accepted new connection\n");
+
+        send_data_to_client(client_socket);
+
+        close(client_socket);
     }
 
-    printf("accepted new connection\n");
-
-    const char *message = "hell0 world!";
-    send(client_socket, message, strlen(message), 0);
-
-    close(client_socket);
     close(server_socket);
 }
